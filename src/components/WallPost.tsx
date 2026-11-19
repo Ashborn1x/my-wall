@@ -5,9 +5,9 @@ import { SafeImage } from './SafeImage';
 
 interface WallPostProps {
   post: WallPostItem;
-  onToggleLikePost: (postId: string) => void;
-  onAddComment: (postId: string, content: string) => void;
-  onToggleLikeComment: (postId: string, commentId: string) => void;
+  onToggleLikePost: (postId: string) => Promise<void>;
+  onAddComment: (postId: string, content: string) => Promise<void>;
+  onToggleLikeComment: (postId: string, commentId: string) => Promise<void>;
   onFilterWallToWall?: () => void;
 }
 
@@ -19,21 +19,45 @@ export const WallPost: React.FC<WallPostProps> = ({
   onFilterWallToWall,
 }) => {
   const [commentText, setCommentText] = useState('');
+  const [actionError, setActionError] = useState('');
   const [commentBoxOpen, setCommentBoxOpen] = useState(
     post.comments.length > 0
   );
 
-  const handleCommentSubmit = (e: React.FormEvent) => {
+  const handleCommentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const trimmed = commentText.trim();
     if (!trimmed) return;
-    onAddComment(post.id, trimmed);
-    setCommentText('');
-    setCommentBoxOpen(true);
+    setActionError('');
+    try {
+      await onAddComment(post.id, trimmed);
+      setCommentText('');
+      setCommentBoxOpen(true);
+    } catch (error) {
+      setActionError(error instanceof Error ? error.message : 'Could not save your comment.');
+    }
+  };
+
+  const handlePostLike = async () => {
+    setActionError('');
+    try {
+      await onToggleLikePost(post.id);
+    } catch (error) {
+      setActionError(error instanceof Error ? error.message : 'Could not save your like.');
+    }
+  };
+
+  const handleCommentLike = async (commentId: string) => {
+    setActionError('');
+    try {
+      await onToggleLikeComment(post.id, commentId);
+    } catch (error) {
+      setActionError(error instanceof Error ? error.message : 'Could not save your like.');
+    }
   };
 
   const hasFeedbackBar =
-    post.likes > 0 || post.comments.length > 0 || commentBoxOpen;
+    post.likes > 0 || post.comments.length > 0 || commentBoxOpen || Boolean(actionError);
 
   return (
     <article
@@ -147,7 +171,7 @@ export const WallPost: React.FC<WallPostProps> = ({
           <span>·</span>
           <button
             type="button"
-            onClick={() => onToggleLikePost(post.id)}
+            onClick={() => void handlePostLike()}
             className="text-[#3b5998] hover:underline cursor-pointer"
           >
             {post.likedByMe ? 'Unlike' : 'Like'}
@@ -214,7 +238,7 @@ export const WallPost: React.FC<WallPostProps> = ({
                     <span>·</span>
                     <button
                       type="button"
-                      onClick={() => onToggleLikeComment(post.id, comment.id)}
+                      onClick={() => void handleCommentLike(comment.id)}
                       className="text-[#3b5998] hover:underline cursor-pointer"
                     >
                       {comment.likedByMe ? 'Unlike' : 'Like'}
@@ -246,6 +270,7 @@ export const WallPost: React.FC<WallPostProps> = ({
                 />
               </form>
             )}
+            {actionError && <p role="alert" className="text-[10px] text-red-700">{actionError}</p>}
           </div>
         )}
       </div>

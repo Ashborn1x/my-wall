@@ -36,6 +36,7 @@ export interface WallPostItem {
   authorAvatar: string;
   content: string;
   timestamp: string;
+  createdAt?: string;
   category: 'status' | 'photos' | 'wall';
   privacy?: PrivacyOption;
   likes: number;

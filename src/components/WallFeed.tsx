@@ -7,10 +7,13 @@ interface WallFeedProps {
   activeFilter: ActivityFilter;
   searchQuery: string;
   onFilterChange: (filter: ActivityFilter) => void;
-  onToggleLikePost: (postId: string) => void;
-  onAddComment: (postId: string, content: string) => void;
-  onToggleLikeComment: (postId: string, commentId: string) => void;
+  onToggleLikePost: (postId: string) => Promise<void>;
+  onAddComment: (postId: string, content: string) => Promise<void>;
+  onToggleLikeComment: (postId: string, commentId: string) => Promise<void>;
   onClearSearch: () => void;
+  isLoading: boolean;
+  loadError: string;
+  onRetry: () => void;
 }
 
 const FILTER_LABELS: Record<ActivityFilter, string> = {
@@ -29,6 +32,9 @@ export const WallFeed: React.FC<WallFeedProps> = ({
   onAddComment,
   onToggleLikeComment,
   onClearSearch,
+  isLoading,
+  loadError,
+  onRetry,
 }) => {
   const [filterMenuOpen, setFilterMenuOpen] = useState(false);
 
@@ -138,9 +144,22 @@ export const WallFeed: React.FC<WallFeedProps> = ({
       )}
 
       {/* Feed Stream */}
-      {posts.length === 0 ? (
+      {isLoading ? (
+        <div role="status" className="border-t border-[#e9e9e9] pt-4 text-center text-gray-500 text-xs py-8">
+          Loading wall posts…
+        </div>
+      ) : loadError ? (
+        <div role="alert" className="border-t border-[#e9e9e9] pt-4 text-center text-xs py-8">
+          <p className="text-red-700">{loadError}</p>
+          <button type="button" onClick={onRetry} className="mt-2 text-[#3b5998] hover:underline cursor-pointer">
+            Try again
+          </button>
+        </div>
+      ) : posts.length === 0 ? (
         <div className="border-t border-[#e9e9e9] pt-4 text-center text-gray-500 text-xs py-8">
-          No wall posts match your current filter.
+          {activeFilter === 'all' && !searchQuery
+            ? 'No wall posts yet.'
+            : 'No wall posts match your current filter.'}
         </div>
       ) : (
         <div

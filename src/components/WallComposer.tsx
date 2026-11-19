@@ -9,7 +9,7 @@ interface WallComposerProps {
     privacy: PrivacyOption;
     linkAttachment?: LinkAttachment;
     photoAttachment?: string;
-  }) => void;
+  }) => Promise<void>;
 }
 
 const MAX_CHARS = 280;
@@ -32,39 +32,54 @@ export const WallComposer: React.FC<WallComposerProps> = ({
   const [attachMode, setAttachMode] = useState<'none' | 'link' | 'photo'>('none');
   const [linkUrl, setLinkUrl] = useState('');
   const [selectedPhoto, setSelectedPhoto] = useState<string>('');
+  const [isPublishing, setIsPublishing] = useState(false);
+  const [publishError, setPublishError] = useState('');
 
-  const trimmedLength = message.trim().length;
-  const charCount = message.length;
-  const isShareDisabled = trimmedLength === 0 || charCount > MAX_CHARS;
+  const trimmedLength = Array.from(message.trim()).length;
+  const charCount = Array.from(message).length;
+  const isShareDisabled = trimmedLength === 0 || charCount > MAX_CHARS || isPublishing;
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const submitMessage = async () => {
     if (isShareDisabled) return;
 
     const cleanLink = linkUrl.trim();
-    onPublish({
-      content: message.trim(),
-      privacy,
-      linkAttachment:
-        attachMode === 'link' && cleanLink
-          ? {
-              url: cleanLink.startsWith('http') ? cleanLink : `https://${cleanLink}`,
-              label: cleanLink,
-            }
-          : undefined,
-      photoAttachment:
-        attachMode === 'photo' && selectedPhoto ? selectedPhoto : undefined,
-    });
+    setIsPublishing(true);
+    setPublishError('');
+    try {
+      await onPublish({
+        content: message.trim(),
+        privacy,
+        linkAttachment:
+          attachMode === 'link' && cleanLink
+            ? {
+                url: cleanLink.startsWith('http') ? cleanLink : `https://${cleanLink}`,
+                label: cleanLink,
+              }
+            : undefined,
+        photoAttachment:
+          attachMode === 'photo' && selectedPhoto ? selectedPhoto : undefined,
+      });
 
-    setMessage('');
-    setLinkUrl('');
-    setSelectedPhoto('');
-    setAttachMode('none');
+      setMessage('');
+      setLinkUrl('');
+      setSelectedPhoto('');
+      setAttachMode('none');
+    } catch (error) {
+      setPublishError(error instanceof Error ? error.message : 'Could not publish your post. Please try again.');
+    } finally {
+      setIsPublishing(false);
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    void submitMessage();
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if ((e.metaKey || e.ctrlKey) && e.key === 'Enter' && !isShareDisabled) {
-      handleSubmit(e);
+      e.preventDefault();
+      void submitMessage();
     }
   };
 
@@ -80,9 +95,12 @@ export const WallComposer: React.FC<WallComposerProps> = ({
           ref={composerRef}
           id="wallStatusInput"
           value={message}
-          onChange={(e) => setMessage(e.target.value.slice(0, MAX_CHARS))}
+          onChange={(e) => {
+            const nextMessage = e.target.value;
+            if (Array.from(nextMessage).length <= MAX_CHARS) setMessage(nextMessage);
+          }}
           onKeyDown={handleKeyDown}
-          maxLength={MAX_CHARS}
+          maxLength={MAX_CHARS * 2}
           placeholder="What's on your mind?"
           rows={2}
           aria-label="What's on your mind?"
@@ -245,10 +263,16 @@ export const WallComposer: React.FC<WallComposerProps> = ({
             disabled={isShareDisabled}
             className="fb-btn-blue text-xs px-3 py-1 cursor-pointer whitespace-nowrap"
           >
-            Share
+            {isPublishing ? 'Sharing…' : 'Share'}
           </button>
         </div>
       </div>
+
+      {publishError && (
+        <p role="alert" className="mt-2 text-[11px] text-red-700">
+          {publishError}
+        </p>
+      )}
 
       {/* 2008 Facebook "New Privacy Control" Tooltip Banner */}
       {showPrivacyNotice && (

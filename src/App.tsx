@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ProfileHeader } from './components/ProfileHeader';
 import { ProfileSidebar } from './components/ProfileSidebar';
@@ -6,12 +8,17 @@ import { SponsoredSidebar } from './components/SponsoredSidebar';
 import { TopNavigation } from './components/TopNavigation';
 import { WallComposer } from './components/WallComposer';
 import { WallFeed } from './components/WallFeed';
+import { INITIAL_FRIENDS, JON_AVATAR, SPONSORED_ADS } from './data/initialWallData';
+import { getSupabaseClient } from './lib/supabase/client';
 import {
-  INITIAL_FRIENDS,
-  INITIAL_POSTS,
-  JON_AVATAR,
-  SPONSORED_ADS,
-} from './data/initialWallData';
+  changeCommentLike,
+  changePostLike,
+  createComment,
+  createPost,
+  fetchLatestPosts,
+  type CommentRecord,
+  type PostRecord,
+} from './lib/supabase/posts';
 import {
   ActivityFilter,
   LinkAttachment,
@@ -20,43 +27,124 @@ import {
   WallPostItem,
 } from './types/wall';
 
-const STORAGE_KEY = 'my_wall_posts_v1';
+function formatWallTimestamp(value: string): string {
+  const date = new Date(value);
+  const day = date.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+  const time = date.toLocaleTimeString('en-US', {
+    hour: 'numeric', minute: '2-digit',
+  }).toLowerCase().replace(/\s+/g, '');
+  return `${day} at ${time}`;
+}
 
-function formatCurrentTimestamp(): string {
-  const now = new Date();
-  const timeStr = now.toLocaleTimeString('en-US', {
-    hour: 'numeric',
-    minute: '2-digit',
-  });
-  return `Today at ${timeStr.toLowerCase().replace(/\s+/g, '')}`;
+function toWallPost(record: PostRecord): WallPostItem {
+  return {
+    id: record.id,
+    authorName: record.author_name,
+    authorAvatar: record.author_avatar,
+    content: record.content,
+    createdAt: record.created_at,
+    timestamp: formatWallTimestamp(record.created_at),
+    category: record.category,
+    privacy: record.privacy ?? undefined,
+    likes: record.likes,
+    likedByMe: false,
+    showWallToWall: record.show_wall_to_wall,
+    album: record.album ?? undefined,
+    linkAttachment: record.link_attachment ?? undefined,
+    photoAttachment: record.photo_attachment ?? undefined,
+    comments: (record.comments ?? []).map(toWallComment),
+  };
+}
+
+function toWallComment(record: CommentRecord) {
+  return {
+    id: record.id,
+    authorName: record.author_name,
+    authorAvatar: record.author_avatar || JON_AVATAR,
+    content: record.content,
+    timestamp: formatWallTimestamp(record.created_at),
+    likes: record.likes,
+    likedByMe: false,
+  };
+}
+
+function mergePosts(current: WallPostItem[], incoming: WallPostItem[]): WallPostItem[] {
+  const postsById = new Map(current.map((post) => [post.id, post]));
+  incoming.forEach((post) => postsById.set(post.id, post));
+  return Array.from(postsById.values())
+    .sort((a, b) => Date.parse(b.createdAt ?? '') - Date.parse(a.createdAt ?? ''))
+    .slice(0, 50);
 }
 
 export default function App() {
-  const [posts, setPosts] = useState<WallPostItem[]>(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return (parsed as WallPostItem[]).map((post) => ({
-            ...post,
-            authorAvatar:
-              post.authorName === 'Jon Doe' ? JON_AVATAR : post.authorAvatar,
-            comments: (post.comments || []).map((comment) => ({
-              ...comment,
-              authorAvatar:
-                comment.authorName === 'Jon Doe'
-                  ? JON_AVATAR
-                  : comment.authorAvatar,
-            })),
-          }));
-        }
-      }
-    } catch {
-      // Fallback to initial posts if storage is unavailable
+  const [posts, setPosts] = useState<WallPostItem[]>([]);
+  const [isLoadingPosts, setIsLoadingPosts] = useState(true);
+  const [postsError, setPostsError] = useState('');
+  const [loadAttempt, setLoadAttempt] = useState(0);
+
+  useEffect(() => {
+    let isActive = true;
+    const supabase = getSupabaseClient();
+
+    if (!supabase) {
+      setPostsError('Supabase is not configured. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to .env.local.');
+      setIsLoadingPosts(false);
+      return () => { isActive = false; };
     }
-    return INITIAL_POSTS;
-  });
+
+    setIsLoadingPosts(true);
+    setPostsError('');
+    const channel = supabase
+      .channel('public-posts-feed')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'posts' }, (payload) => {
+        if (!isActive) return;
+        setPosts((current) => mergePosts(current, [toWallPost(payload.new as PostRecord)]));
+      })
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'posts' }, (payload) => {
+        if (!isActive) return;
+        const updated = payload.new as PostRecord;
+        setPosts((current) => current.map((post) =>
+          post.id === updated.id ? { ...post, likes: updated.likes } : post
+        ));
+      })
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'comments' }, (payload) => {
+        if (!isActive) return;
+        const comment = toWallComment(payload.new as CommentRecord);
+        const postId = (payload.new as CommentRecord).post_id;
+        setPosts((current) => current.map((post) => post.id !== postId || post.comments.some((item) => item.id === comment.id)
+          ? post
+          : { ...post, comments: [...post.comments, comment] }
+        ));
+      })
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'comments' }, (payload) => {
+        if (!isActive) return;
+        const updated = payload.new as CommentRecord;
+        setPosts((current) => current.map((post) => ({
+          ...post,
+          comments: post.comments.map((comment) => comment.id === updated.id
+            ? { ...comment, likes: updated.likes }
+            : comment
+          ),
+        })));
+      })
+      .subscribe();
+
+    fetchLatestPosts()
+      .then((records) => {
+        if (isActive) setPosts((current) => mergePosts(current, records.map(toWallPost)));
+      })
+      .catch((error: unknown) => {
+        if (isActive) setPostsError(error instanceof Error ? error.message : 'Could not load wall posts.');
+      })
+      .finally(() => {
+        if (isActive) setIsLoadingPosts(false);
+      });
+
+    return () => {
+      isActive = false;
+      void supabase.removeChannel(channel);
+    };
+  }, [loadAttempt]);
 
   const [activeTab, setActiveTab] = useState<ProfileTab>('wall');
   const [activeFilter, setActiveFilter] = useState<ActivityFilter>('all');
@@ -65,98 +153,52 @@ export default function App() {
   const composerRef = useRef<HTMLTextAreaElement | null>(null);
   const friendsSectionRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
-    } catch {
-      // Ignore storage quota errors
-    }
-  }, [posts]);
-
-  const handlePublishPost = (payload: {
+  const handlePublishPost = async (payload: {
     content: string;
     privacy: PrivacyOption;
     linkAttachment?: LinkAttachment;
     photoAttachment?: string;
   }) => {
-    const newPost: WallPostItem = {
-      id: `post-${Date.now()}`,
-      authorName: 'Jon Doe',
-      authorAvatar: JON_AVATAR,
-      content: payload.content,
-      timestamp: formatCurrentTimestamp(),
-      category: payload.photoAttachment ? 'photos' : 'status',
-      privacy: payload.privacy,
-      likes: 0,
-      likedByMe: false,
-      linkAttachment: payload.linkAttachment,
-      photoAttachment: payload.photoAttachment,
-      comments: [],
-    };
-
-    setPosts((prev) => [newPost, ...prev]);
+    const record = await createPost(payload);
+    setPosts((current) => mergePosts(current, [toWallPost(record)]));
     setActiveTab('wall');
     setActiveFilter('all');
     setSearchQuery('');
   };
 
-  const handleToggleLikePost = (postId: string) => {
-    setPosts((prev) =>
-      prev.map((post) => {
-        if (post.id !== postId) return post;
-        const nextLiked = !post.likedByMe;
-        return {
-          ...post,
-          likedByMe: nextLiked,
-          likes: nextLiked ? post.likes + 1 : Math.max(0, post.likes - 1),
-        };
-      })
-    );
+  const handleToggleLikePost = async (postId: string) => {
+    const post = posts.find((item) => item.id === postId);
+    if (!post) return;
+    const nextLiked = !post.likedByMe;
+    const likes = await changePostLike(postId, nextLiked ? 1 : -1);
+    setPosts((current) => current.map((item) => item.id === postId
+      ? { ...item, likedByMe: nextLiked, likes }
+      : item
+    ));
   };
 
-  const handleAddComment = (postId: string, content: string) => {
-    setPosts((prev) =>
-      prev.map((post) => {
-        if (post.id !== postId) return post;
-        return {
-          ...post,
-          comments: [
-            ...post.comments,
-            {
-              id: `comment-${Date.now()}`,
-              authorName: 'Jon Doe',
-              authorAvatar: JON_AVATAR,
-              content,
-              timestamp: 'Just now',
-              likes: 0,
-              likedByMe: false,
-            },
-          ],
-        };
-      })
-    );
+  const handleAddComment = async (postId: string, content: string) => {
+    const record = await createComment(postId, content);
+    const comment = toWallComment(record);
+    setPosts((current) => current.map((post) => post.id !== postId || post.comments.some((item) => item.id === comment.id)
+      ? post
+      : { ...post, comments: [...post.comments, comment] }
+    ));
   };
 
-  const handleToggleLikeComment = (postId: string, commentId: string) => {
-    setPosts((prev) =>
-      prev.map((post) => {
-        if (post.id !== postId) return post;
-        return {
-          ...post,
-          comments: post.comments.map((comment) => {
-            if (comment.id !== commentId) return comment;
-            const nextLiked = !comment.likedByMe;
-            return {
-              ...comment,
-              likedByMe: nextLiked,
-              likes: nextLiked
-                ? comment.likes + 1
-                : Math.max(0, comment.likes - 1),
-            };
-          }),
-        };
-      })
-    );
+  const handleToggleLikeComment = async (postId: string, commentId: string) => {
+    const post = posts.find((item) => item.id === postId);
+    const comment = post?.comments.find((item) => item.id === commentId);
+    if (!comment) return;
+    const nextLiked = !comment.likedByMe;
+    const likes = await changeCommentLike(commentId, nextLiked ? 1 : -1);
+    setPosts((current) => current.map((item) => item.id !== postId ? item : {
+      ...item,
+      comments: item.comments.map((entry) => entry.id === commentId
+        ? { ...entry, likedByMe: nextLiked, likes }
+        : entry
+      ),
+    }));
   };
 
   const handleFocusComposer = () => {
@@ -238,6 +280,9 @@ export default function App() {
                   onAddComment={handleAddComment}
                   onToggleLikeComment={handleToggleLikeComment}
                   onClearSearch={() => setSearchQuery('')}
+                  isLoading={isLoadingPosts}
+                  loadError={postsError}
+                  onRetry={() => setLoadAttempt((attempt) => attempt + 1)}
                 />
               </>
             ) : (
