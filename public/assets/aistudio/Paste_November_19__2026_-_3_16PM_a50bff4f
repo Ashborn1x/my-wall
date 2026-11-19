@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Jon - Facebook | My Wall</title>
+<!-- Load Tailwind CSS v3 with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script data-purpose="tailwind-config">
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'fb-navy': '#3b5998',
+            'fb-navy-dark': '#29447e',
+            'fb-border': '#d8dfea',
+            'fb-subtle-border': '#cccccc',
+            'fb-hover-blue': '#eceff5',
+            'fb-text': '#333333',
+            'fb-link': '#3b5998',
+            'fb-gray-bg': '#f7f7f7',
+            'fb-tooltip-green': '#89b657',
+            'fb-tooltip-bg': '#f2f8eb',
+          },
+          fontFamily: {
+            classic: ['"Lucida Grande"', 'Tahoma', 'Verdana', 'Arial', 'sans-serif'],
+          },
+          fontSize: {
+            '2xs': '10px',
+            'xs': '11px',
+            'sm': '12px',
+            'base': '13px',
+          }
+        }
+      }
+    }
+  </script>
+<!-- BEGIN: Custom CSS Styling -->
+<style data-purpose="typography">
+    body {
+      font-family: "Lucida Grande", Tahoma, Verdana, Arial, sans-serif;
+      font-size: 11px;
+      color: #333333;
+      background-color: #ffffff;
+      -webkit-font-smoothing: antialiased;
+    }
+    a {
+      color: #3b5998;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+<style data-purpose="classic-components">
+    /* 2008 Facebook beveled buttons */
+    .fb-btn-blue {
+      background-color: #3b5998;
+      border: 1px solid #29447e;
+      border-bottom-color: #1a356e;
+      color: white;
+      font-weight: bold;
+      text-shadow: 0 -1px 0 #1a356e;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.25);
+    }
+    .fb-btn-blue:hover {
+      background-color: #4c66a4;
+    }
+    .fb-btn-blue:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* Classic Tab Styles */
+    .fb-tab {
+      background-color: #d8dfea;
+      border-top: 1px solid #5973a9;
+      border-left: 1px solid #5973a9;
+      border-right: 1px solid #5973a9;
+      color: #3b5998;
+      font-weight: bold;
+      padding: 4px 10px 3px;
+      font-size: 12px;
+      margin-right: 4px;
+      display: inline-block;
+      border-top-left-radius: 2px;
+      border-top-right-radius: 2px;
+    }
+    .fb-tab.active {
+      background-color: #ffffff;
+      border-top: 1px solid #3b5998;
+      border-left: 1px solid #3b5998;
+      border-right: 1px solid #3b5998;
+      border-bottom: 1px solid #ffffff;
+      color: #333333;
+      margin-bottom: -1px;
+      z-index: 10;
+    }
+    .fb-tab:not(.active):hover {
+      background-color: #eceff5;
+      text-decoration: none;
+    }
+
+    /* Classic box headers */
+    .fb-box-header {
+      background-color: #eceff5;
+      border-bottom: 1px solid #d8dfea;
+      padding: 4px 8px;
+      font-size: 11px;
+      font-weight: bold;
+      color: #3b5998;
+    }
+
+    /* Retro tooltip arrow */
+    .tooltip-arrow-top {
+      width: 0;
+      height: 0;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-bottom: 6px solid #89b657;
+      position: absolute;
+      top: -6px;
+      right: 28px;
+    }
+  </style>
+<!-- END: Custom CSS Styling -->
+</head>
+<body class="bg-white min-h-screen text-fb-text">
+<!-- BEGIN: TopBar -->
+<header class="bg-fb-navy w-full border-b border-fb-navy-dark h-[38px] flex items-center justify-center px-4 sticky top-0 z-50 shadow-sm" data-purpose="global-header">
+<div class="w-full max-w-[1020px] flex items-center justify-between">
+<!-- Brand Logo & Left Main Navigation -->
+<div class="flex items-center space-x-6">
+<a class="text-white font-black text-2xl tracking-tighter hover:no-underline font-sans pb-1" href="#" title="facebook home">facebook</a>
+<nav class="hidden sm:flex items-center space-x-3 text-xs text-white">
+<a class="text-white hover:underline font-normal" href="#">Home</a>
+<a class="text-white font-bold hover:underline" href="#">Profile</a>
+<a class="text-white hover:underline font-normal" href="#">Friends</a>
+<a class="text-white hover:underline flex items-center gap-1 font-normal" href="#">
+            Inbox 
+            <span class="bg-red-600 text-white font-bold px-1 rounded-sm text-[10px] leading-tight">2</span>
+</a>
+</nav>
+</div>
+<!-- Right User Controls & Vintage Search Bar -->
+<div class="flex items-center space-x-3 text-xs">
+<div class="hidden md:flex items-center space-x-2 text-white/90">
+<a class="text-white font-semibold hover:underline" href="#">Jon Doe</a>
+<span class="text-blue-200">|</span>
+<a class="text-white hover:underline" href="#">Settings</a>
+<span class="text-blue-200">|</span>
+<a class="text-white hover:underline" href="#">Logout</a>
+</div>
+<!-- Search input box -->
+<div class="relative flex items-center" data-purpose="site-search">
+<input class="h-[22px] w-36 sm:w-44 text-xs px-2 pr-6 border border-gray-400 focus:outline-none rounded-none text-black bg-white" placeholder="Search" type="text"/>
+<button class="absolute right-0 top-0 h-[22px] w-6 bg-[#d8dfea] border border-[#a0a9b8] border-l-0 flex items-center justify-center text-fb-navy hover:bg-white" title="Search">
+<svg class="w-3.5 h-3.5 fill-current" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" fill-rule="evenodd"></path>
+</svg>
+</button>
+</div>
+</div>
+</div>
+</header>
+<!-- END: TopBar -->
+<!-- BEGIN: MainContentContainer -->
+<main class="w-full max-w-[1020px] mx-auto pt-4 px-2 sm:px-4">
+<!-- Profile Header & Name Section -->
+<section class="border-b border-[#3b5998] mb-0 pb-0" data-purpose="profile-header">
+<h1 class="text-xl sm:text-2xl font-bold text-[#1c2a47] mb-2 leading-none">Jon Doe</h1>
+<!-- Authentic Navigation Tabs -->
+<div class="flex items-end space-x-1 pl-1" data-purpose="profile-tabs">
+<a class="fb-tab active" href="#wall">Wall</a>
+<a class="fb-tab" href="#info">Info</a>
+<a class="fb-tab" href="#photos">Photos (142)</a>
+<a class="fb-tab" href="#notes">Notes</a>
+<a class="fb-tab" href="#boxes">Boxes</a>
+<a class="fb-tab text-gray-500 font-normal hover:text-black" href="#plus">+</a>
+</div>
+</section>
+<!-- 3-Column 2008 Layout -->
+<div class="flex flex-col md:flex-row gap-4 pt-3">
+<!-- BEGIN: LeftSidebar -->
+<aside class="w-full md:w-[195px] flex-shrink-0 text-xs" data-purpose="left-column-profile-info">
+<!-- Profile Picture Box -->
+<div class="border border-[#cccccc] p-1 bg-white mb-3">
+<img alt="Jon Doe Profile" class="w-full h-auto object-cover border border-[#e0e0e0] block" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAApRj_NJ7teK7Rf3hfD4PZF-PaAcqzUl2XHj6wiBEFBq9CDMsnwVNBEh0FydhuKO-XYSEZHJ--QtxLpSs4hL2Kh2Z1r9G5_-kzaSjpGIIFtC18Z3BSjqjGy5vE7VdKFQcIt0NPvXNobYQMwcnF5O_oxbpZ7O0bg8AJBcPbyKPsLdJns02mf5GD-tWBxhY590G8CWjTeRynMuTaaOIcWYgNxLzHbOx6lLCdN0xe6CtN-0--Ck6uwO8"/>
+</div>
+<!-- Sidebar Action Links -->
+<ul class="space-y-1.5 pb-4 mb-3 border-b border-[#e5e5e5] text-xs">
+<li><a class="hover:underline" href="#">View Photos of Jon (142)</a></li>
+<li><a class="hover:underline" href="#">View Videos of Jon (8)</a></li>
+<li><a class="hover:underline" href="#">Send Jon a Message</a></li>
+<li><a class="hover:underline" href="#">Poke Jon</a></li>
+<li><a class="hover:underline" href="#">Write on Jon's Wall</a></li>
+</ul>
+<!-- Information Summary Panel -->
+<div class="border border-[#d8dfea] mb-4 bg-white" data-purpose="info-panel">
+<div class="fb-box-header">Information</div>
+<div class="p-2 space-y-2 text-[11px] leading-tight">
+<div>
+<span class="text-gray-500 block">Networks:</span>
+<span class="font-normal text-fb-navy hover:underline cursor-pointer">San Francisco, CA</span>
+<span class="block text-fb-navy hover:underline cursor-pointer">Harvard Alum</span>
+</div>
+<div>
+<span class="text-gray-500 block">Birthday:</span>
+<span>June 15, 1988</span>
+</div>
+<div>
+<span class="text-gray-500 block">Current City:</span>
+<span class="text-fb-navy hover:underline cursor-pointer">San Francisco, CA</span>
+</div>
+<div>
+<span class="text-gray-500 block">Relationship Status:</span>
+<span>In a Relationship</span>
+</div>
+</div>
+</div>
+<!-- Friends List Box -->
+<div class="border border-[#d8dfea] mb-4 bg-white" data-purpose="mutual-friends-box">
+<div class="fb-box-header flex justify-between items-center">
+<span>Friends</span>
+<a class="text-[10px] font-normal hover:underline" href="#">See All (348)</a>
+</div>
+<div class="p-2">
+<p class="text-[10px] text-gray-500 mb-2">287 friends in common</p>
+<div class="grid grid-cols-3 gap-1.5 text-center">
+<!-- Friend Item -->
+<div class="flex flex-col items-center">
+<img alt="Priscilla" class="w-12 h-12 object-cover border border-[#cccccc] mb-1" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBnAqgg40ixG9hve0tJb65K73iducnKcNQnynmcDn4wAZzEdxGZ72884Tyhuj2jct5qsuTWZKeKC-HzwVrzXeaugwFNJlCvqCx5KOtoo3B_mFBtGky6YMSJiwS5XjK096ra_hDzBA2D3N1zamvllIun2NNNuLgRYS1iGxQXhOW2Wdoc5I6cAfMV-ET3o4J5GWW_dLi8Kh_YGF68iESpZFRNO9TlFSXqHJAiYeSrag"/>
+<span class="text-[10px] leading-3 text-fb-navy hover:underline truncate w-full">Priscilla</span>
+</div>
+<div class="flex flex-col items-center">
+<img alt="Robert" class="w-12 h-12 object-cover border border-[#cccccc] mb-1" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHMd4chnsrC6XXDwwFsS4gAdeSAAILllCD0bThRY-XF5IQLpYYNQ_WUXoXbpBillnQ4ga2by6MVCnLHeXP4NlzZFtl0LrbShmFxodFJdLAdKyfjaer6a3-uYkTG4z5dQEmkELbk8_oXzvjvUJ-5R2sux__f0E_bLTYQufiyK0My7JblYvrklhBBfAudfZKnfytesyerwW_TEEWPJb9PHzfcdpcD3B9P_K-kgwhOA"/>
+<span class="text-[10px] leading-3 text-fb-navy hover:underline truncate w-full">Robert</span>
+</div>
+<div class="flex flex-col items-center">
+<img alt="Eduardo" class="w-12 h-12 object-cover border border-[#cccccc] mb-1" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDtlVL9b0qSMW1zyIQlIZaSuHDkSFwesS1nD_-ieJ6s4RrdaFR2pS00OWr_zYFVavZ5ABYa1wjOxvpBrSQN4Rzj8HL1AlbPIL39Yo6ru_u7hNtkzZugxAyjZLawwOmUgMe-sZ9FtVun_ZUGpwqnTJoABwqINKepxiKD2ILej5C5Mm3fTO3Wcbr7Wgh3i7KMP2oTq_-tTE1vVi3lNaLfJ3QpSOCDbm9tWhpKyygeew"/>
+<span class="text-[10px] leading-3 text-fb-navy hover:underline truncate w-full">Eduardo</span>
+</div>
+<div class="flex flex-col items-center">
+<img alt="Dustin" class="w-12 h-12 object-cover border border-[#cccccc] mb-1" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCkwZROvRj6_dthrmXEaGX1JUUCeEJRPoC_OR1ZgmNCvkXyjEkR2MY48XOveWKMSxXnHWSKVGshhL5egxqtm9nVOc7sKMipjzhgTpO3vGF4hgYwbysq_Zk1J7_656aLQLr5yN3aVVgQWU1dc2jsC0Nj1JflQvHP9M-N607Uv8PZroiz-ey82FNP4csQHrThlHi7XHsHICqsAdajEfBAHTNwZDs4xPweoM92tfs55Q"/>
+<span class="text-[10px] leading-3 text-fb-navy hover:underline truncate w-full">Dustin</span>
+</div>
+<div class="flex flex-col items-center">
+<img alt="Chris" class="w-12 h-12 object-cover border border-[#cccccc] mb-1" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJDi1Tvx905ar4L9BDg4x3Bcc6tvJ6FvWfbYD9ep5fSJTtJPWuawtyEzawBMuKn77v-OYKSQY3m12EvHrqgb3VRZUTPWk76nzTwnI59aq6Ih27-B9j7N88dbM9vlMa88cEwo5GY-_pQYSo27RqXX40RAUl3ow79lrrFvi4iqRwWL8_S_hL9k5cYhzBDW56UrlsVb9uj-xqjN9jWN43R-_tbdyGypMSHDK_6l-vyw"/>
+<span class="text-[10px] leading-3 text-fb-navy hover:underline truncate w-full">Chris</span>
+</div>
+<div class="flex flex-col items-center">
+<img alt="Sean" class="w-12 h-12 object-cover border border-[#cccccc] mb-1" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPkcQd8OQFymJhNRrq7zosm_7b7_myKfwFoufU1w-bbNmiUQTF1h6ZuKYBLQ1Evwyt3o_U227b2OrL8ayLOjzoxHGCGunmEOGzvm8bVLK9w67hQA78dp_bng43Y04AQ4jxYl2QSa7Wt5WWH2XDEoW4Qd6uznygoWaWhEO8EuULgeyhCD2kmUwro7dCZdzhQD64JJLPzJ9PnwxyXHFbpt4XvJGMzqbBIKt9-s-hvA"/>
+<span class="text-[10px] leading-3 text-fb-navy hover:underline truncate w-full">Sean</span>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<!-- END: LeftSidebar -->
+<!-- BEGIN: CenterWallFeed -->
+<section class="flex-1 min-w-0" data-purpose="center-feed">
+<!-- Classic Wall Composer -->
+<div class="border border-[#b3b3b3] p-2 bg-[#f7f7f7] mb-4 relative" data-purpose="post-composer">
+<!-- Textarea -->
+<div class="bg-white border border-[#bdc7d8] focus-within:border-[#3b5998] p-1.5 mb-2">
+<textarea class="w-full border-0 p-0 text-xs focus:ring-0 focus:outline-none resize-none text-gray-800 placeholder-gray-400" id="wallStatusInput" maxlength="280" placeholder="What's on your mind?" rows="2"></textarea>
+</div>
+<!-- Bottom controls bar -->
+<div class="flex flex-wrap items-center justify-between gap-2">
+<!-- Attachment Options -->
+<div class="flex items-center space-x-2 text-[11px] text-gray-600">
+<span class="font-semibold text-gray-500">Attach:</span>
+<button class="hover:underline flex items-center gap-1 text-gray-700 hover:text-fb-navy" title="Attach Photo" type="button">
+                📷 <span class="hidden sm:inline">Photo</span>
+</button>
+<button class="hover:underline flex items-center gap-1 text-gray-700 hover:text-fb-navy" title="Attach Video" type="button">
+                📹 <span class="hidden sm:inline">Video</span>
+</button>
+<button class="hover:underline flex items-center gap-1 text-gray-700 hover:text-fb-navy" title="Attach Link" type="button">
+                🔗 <span class="hidden sm:inline">Link</span>
+</button>
+<button class="hover:underline flex items-center gap-1 text-gray-700 hover:text-fb-navy" title="Attach Note" type="button">
+                📝 <span class="hidden sm:inline">Note</span>
+</button>
+</div>
+<!-- Privacy Selector & Submit Button -->
+<div class="flex items-center space-x-2 ml-auto">
+<span class="text-[10px] text-gray-500" id="charCount">0/280</span>
+<!-- Privacy Pill with retro padlock -->
+<div class="relative inline-block text-[11px] bg-white border border-[#cccccc] px-2 py-0.5 text-gray-700 cursor-pointer rounded-sm hover:border-gray-400">
+<span class="flex items-center gap-1">
+                  🔒 Friends and Networks <span class="text-[9px]">▼</span>
+</span>
+</div>
+<!-- Share Button -->
+<button class="fb-btn-blue text-xs px-3 py-1 cursor-pointer disabled:opacity-50" id="shareBtn" type="button">
+                Share
+              </button>
+</div>
+</div>
+<!-- 2008 Facebook "New Privacy Control" Tooltip Banner -->
+<div class="mt-2.5 p-2 bg-fb-tooltip-bg border border-fb-tooltip-green text-[11px] leading-snug rounded-sm relative" data-purpose="privacy-notice">
+<div class="tooltip-arrow-top"></div>
+<strong class="text-green-900 block mb-0.5 font-bold">New Privacy Control</strong>
+<span class="text-gray-700">Use this new control to choose who can see each post you publish. </span>
+<a class="text-fb-navy hover:underline" href="#">Learn more...</a>
+</div>
+</div>
+<!-- Recent Activity Filter Row -->
+<div class="flex items-center justify-between border-b border-[#cccccc] pb-1 mb-3 text-xs">
+<span class="font-bold text-gray-500 tracking-wider text-[10px] uppercase">Recent Activity</span>
+<a class="text-fb-navy hover:underline flex items-center gap-0.5 text-[11px]" href="#">
+            Filters <span class="text-[9px]">▼</span>
+</a>
+</div>
+<!-- Mini Activity Item -->
+<div class="text-[11px] text-gray-600 mb-3 space-y-1 pl-1">
+<div class="flex items-center space-x-1.5">
+<span class="text-blue-700 text-xs">📷</span>
+<span><a class="font-bold" href="#">Jon</a> likes <a href="#">Nick Schrock's</a> photo.</span>
+</div>
+<div class="flex items-center space-x-1.5">
+<span class="text-blue-700 text-xs">👥</span>
+<span><a class="font-bold" href="#">Jon</a> joined the group <a href="#">Web Developers 2008</a>.</span>
+</div>
+</div>
+<!-- Feed Stream -->
+<div class="space-y-4" data-purpose="wall-feed-posts" id="wallFeedStream">
+<!-- POST 1: Priscilla Chan -->
+<article class="border-t border-[#e9e9e9] pt-3 flex space-x-2.5" data-purpose="feed-item">
+<img alt="Priscilla Chan" class="w-10 h-10 object-cover border border-[#cccccc] flex-shrink-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSrp085s778rxMq_u8iU6fXP-XM3TPH3b3iZYNjtmzyIwHgPrJoEhdUtst8SS1pzPX0RcuGCGceK-FKyW8t4TZQyqnsGZicCF1afpA-oFw1wH-m6j_TswJYfBqv2O_DxOwH9rxUUOzsnXgxU8C-7lk2CTJzzvf5HO0OblEJK0KVgMQrhRpfZhRYICgZx86slfLARwmuleGjXjwTCJWkZqHVmP125WVqUHHi4z7fw"/>
+<div class="flex-1 text-xs">
+<div>
+<a class="font-bold text-fb-navy hover:underline" href="#">Priscilla Chan</a>
+<span class="text-gray-900 ml-1">hi!</span>
+</div>
+<div class="text-[10px] text-gray-400 mt-1">
+<span>Sat at 10:52am</span> · 
+                <a class="text-fb-navy hover:underline" href="#">Comment</a> · 
+                <a class="text-fb-navy hover:underline" href="#">Like</a> · 
+                <a class="text-fb-navy hover:underline" href="#">See Wall-to-Wall</a>
+</div>
+</div>
+</article>
+<!-- POST 2: Robert Scoble Photo Walk Album -->
+<article class="border-t border-[#e9e9e9] pt-3 flex space-x-2.5" data-purpose="feed-item">
+<img alt="Robert Scoble" class="w-10 h-10 object-cover border border-[#cccccc] flex-shrink-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAKw8zwgHwOyl6hWLroMI_xxIL2hdT0HHDYhJLc9dWT69po6-N4qJm9lMImFkb2BmY2e2sSzGiGll7JdwVopUcEVVaTrK77r2vAqHuXXnSnk-R7Gl99hH-7MlvavAihwALlrLHnQ926FZG24SpoO9T5Dao4BRvy0HR1D4WbiyXYLyK0dYeWNhwOESENo98NyubEVNoQP6rDd4npGJ6RLXv1g1XF3V9dTQcezAlkdw"/>
+<div class="flex-1 text-xs">
+<div>
+<a class="font-bold text-fb-navy hover:underline" href="#">Robert Scoble</a>
+<span class="text-gray-500 text-[11px] ml-1">in these photos: <a class="text-fb-navy hover:underline" href="#">Jon Doe</a></span>
+</div>
+<!-- Album Photos Inline Grid -->
+<div class="grid grid-cols-3 gap-2 my-2 bg-gray-50 p-2 border border-[#e0e0e0]">
+<img alt="Office Walk 1" class="w-full h-20 object-cover border border-gray-300" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTb2h3g_isQ-PwbRQRCEP5d2t-BymyqQNB_vYAkF8527HF08hnlx4xZBjdrB51yj6K23PRtV1vXliuBljQHS9rT2R3hN0FXq3JNz7C1FuCI2PUm6aIQEis0sO75ZzLr5OD5yk8do7avUeKwOw6YNecxONbRfV3H8WtVHXX_jQKzE5f0iJTj5j9Khv6Vd-n_PY3CcBkmhZDoFNk3ys8GiKICm-K9sSZv7UT1Vo0cg"/>
+<img alt="Office Walk 2" class="w-full h-20 object-cover border border-gray-300" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCiW1DeN19WYfOyiC9NVWW-6k2CoLO37kqOK2arg3H84sZRXuIlh_2cAgT7PpRhFP3aG1K6bf1kDODJW94HQzcbFJiy4MIbE_lH8nNUrn1mxvMnyz-PNp5Wj2e7yxzSziKj0PUkyyeFA9yl0V33fJLU5_vjH7DNoTFmk6iqVbHFjsadg5elwB_ROZicKZKd9E8AzYcrGuGp8I1uScBKCe_cwhgwUkQCoj4sdyojXQ"/>
+<img alt="Office Walk 3" class="w-full h-20 object-cover border border-gray-300" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUaA1saqoDjqlBJ-Em6FdM5xQAWRibx20tsXVKYnkeD0wxUsY8DurhfhTyBR-YZKB4y-z4Tu_viM_HBXTvEjZRTx-AO3q6oMbKGQtkmCM7Bdf9_hfkdqCLy6GOOmFy9graUCRkBMXbxO9Ku0RUdua2cFRp62eWu5LFKG5cI3UDx1yakx79EPPxtlrd-kUYWxeoQ5H212eXclwVv4ZDen3yTK_tSIzXOopnzCIPOA"/>
+</div>
+<div>
+<a class="font-bold text-fb-navy hover:underline" href="#">Photowalk around Facebook's new headquarters</a>
+<p class="text-gray-700 mt-1 leading-normal text-[11px]">
+                  I visited Facebook's new headquarters today (they've been in there just a little more than a week now so I figured I should document what life was like on May 2, 2009). We were filming interviews for building43.com!
+                </p>
+</div>
+<div class="text-[10px] text-gray-400 mt-1.5">
+<span>June 3 at 12:02am</span> · 
+                <a class="text-fb-navy hover:underline" href="#">View album</a> · 
+                <a class="text-fb-navy hover:underline" href="#">Like</a> · 
+                <a class="text-fb-navy hover:underline" href="#">Comment</a>
+</div>
+</div>
+</article>
+<!-- POST 3: Status Post by Jon -->
+<article class="border-t border-[#e9e9e9] pt-3 flex space-x-2.5" data-purpose="feed-item">
+<img alt="Jon Doe" class="w-10 h-10 object-cover border border-[#cccccc] flex-shrink-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAApRj_NJ7teK7Rf3hfD4PZF-PaAcqzUl2XHj6wiBEFBq9CDMsnwVNBEh0FydhuKO-XYSEZHJ--QtxLpSs4hL2Kh2Z1r9G5_-kzaSjpGIIFtC18Z3BSjqjGy5vE7VdKFQcIt0NPvXNobYQMwcnF5O_oxbpZ7O0bg8AJBcPbyKPsLdJns02mf5GD-tWBxhY590G8CWjTeRynMuTaaOIcWYgNxLzHbOx6lLCdN0xe6CtN-0--Ck6uwO8"/>
+<div class="flex-1 text-xs">
+<div>
+<a class="font-bold text-fb-navy hover:underline" href="#">Jon Doe</a>
+<span class="text-gray-900 ml-1">Awesome -- famous actors and singers sing Andy Samberg songs at MTV Movie Awards... check it out!</span>
+</div>
+<div class="text-[10px] text-gray-400 mt-1">
+<span>June 1 at 3:14pm</span> · 
+                <a class="text-fb-navy hover:underline" href="#">Comment</a> · 
+                <a class="text-fb-navy hover:underline" href="#">Like</a>
+</div>
+</div>
+</article>
+<!-- POST 4: Wall-to-Wall message with Comments Nested -->
+<article class="border-t border-[#e9e9e9] pt-3 flex space-x-2.5" data-purpose="feed-item">
+<img alt="Sean Parker" class="w-10 h-10 object-cover border border-[#cccccc] flex-shrink-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA6gVtVXbbCThZr7j3fnDWL1XF1Ra_FbMbot1i6IuRK64XS7W41f8fy6A6fUn2qc4JxgIM9HL6ZRQATCIVhVDpCeWtRy4Bnzl_s2FkLQAplXfHzakxFaBaQDyHZXaykSDSKa-rM2blc2ByaRUcTxb1XBrwctnMIyxXlPjsOif3JZsf4RC7MhbkecEbXA08fMKae2acM47j-FQUgqCiOg9XZAy39pbrxBMAj6FYHHQ"/>
+<div class="flex-1 text-xs">
+<div>
+<a class="font-bold text-fb-navy hover:underline" href="#">Sean Parker</a>
+<span class="text-gray-900 ml-1">A billion dollars isn't cool. You know what's cool? A retro 2008 Facebook wall rebuilt in pixel perfection! Congrats man!</span>
+</div>
+<div class="text-[10px] text-gray-400 mt-1">
+<span>May 28 at 6:45pm</span> · 
+                <a class="text-fb-navy hover:underline" href="#">Comment</a> · 
+                <a class="text-fb-navy hover:underline" href="#">Like</a> · 
+                <a class="text-fb-navy hover:underline" href="#">See Wall-to-Wall</a>
+</div>
+<!-- Nested Comment Box (Authentic 2008 style) -->
+<div class="mt-2.5 bg-[#eceff5] border-t border-[#d8dfea] p-2 space-y-2">
+<div class="flex space-x-2 items-start">
+<img alt="Jon" class="w-6 h-6 object-cover border border-[#cccccc] flex-shrink-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAApRj_NJ7teK7Rf3hfD4PZF-PaAcqzUl2XHj6wiBEFBq9CDMsnwVNBEh0FydhuKO-XYSEZHJ--QtxLpSs4hL2Kh2Z1r9G5_-kzaSjpGIIFtC18Z3BSjqjGy5vE7VdKFQcIt0NPvXNobYQMwcnF5O_oxbpZ7O0bg8AJBcPbyKPsLdJns02mf5GD-tWBxhY590G8CWjTeRynMuTaaOIcWYgNxLzHbOx6lLCdN0xe6CtN-0--Ck6uwO8"/>
+<div class="text-[11px] leading-tight">
+<a class="font-bold text-fb-navy hover:underline" href="#">Jon Doe</a>
+<span class="text-gray-800 ml-1">Haha thanks Sean! Drop by the office tomorrow!</span>
+<div class="text-[9px] text-gray-400 mt-0.5">May 28 at 7:12pm · <a class="hover:underline" href="#">Like</a></div>
+</div>
+</div>
+<!-- Inline comment input -->
+<div class="pt-1">
+<input class="w-full bg-white border border-[#bdc7d8] px-2 py-1 text-[11px] focus:outline-none focus:border-[#3b5998]" placeholder="Write a comment..." type="text"/>
+</div>
+</div>
+</div>
+</article>
+</div>
+<!-- End Feed Stream -->
+</section>
+<!-- END: CenterWallFeed -->
+<!-- BEGIN: RightSidebarAds -->
+<aside class="w-full md:w-[190px] flex-shrink-0 text-xs border-t md:border-t-0 md:border-l md:border-[#eeeeee] md:pl-3" data-purpose="retro-advertisements">
+<div class="flex justify-between items-center mb-2">
+<span class="font-bold text-gray-500 uppercase text-[10px] tracking-wide">Sponsored</span>
+<a class="text-[10px] text-fb-navy hover:underline" href="#">Create an Ad</a>
+</div>
+<!-- Ad Item 1: Scuba Diving -->
+<div class="mb-4 pb-3 border-b border-[#ececec]">
+<a class="font-bold text-fb-navy hover:underline block text-xs mb-1" href="#">Scuba Diving Vacations</a>
+<a class="block mb-1" href="#">
+<img alt="Scuba Diving" class="w-full h-auto border border-[#cccccc]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDRgl3y8E-CThz7MadXQzJhvYT4xJadX81cJGgb0jxXIszmSdQVfPPpffrqN11b9CT8TlPUS7cTgLp_69uP0ruRYQPVRIjpgLVZ6Xg_eaKyZNOH82WAnlHUhuDwFBZmjfJkantlCmMNySREipZnVALCYi62kBUG839TD6gjuAVzwdU71BW_QlEzIBvzwynXnXS2oDxlhEVCq2JxO9SCJ9ixZs47UARqwVUM21e_Hg"/>
+</a>
+<p class="text-[11px] text-gray-600 leading-tight">
+            Dive or Snorkel with Stuart Cove's Dive Bahamas in Nassau. World class walls, reefs and unforgettable shark dives! 800-879-9832
+          </p>
+</div>
+<!-- Ad Item 2: Hard Drive Imaging -->
+<div class="mb-4 pb-3 border-b border-[#ececec]">
+<a class="font-bold text-fb-navy hover:underline block text-xs mb-1" href="#">Hard Drive Imaging?</a>
+<a class="block mb-1" href="#">
+<img alt="Drive Imaging" class="w-full h-auto border border-[#cccccc]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAssI8u8Mn66LAv3O_Pc_-1Y1aAJJipREALTICdT-k6SqLh5JOfJXEeQoAIScMNKEqeB8HS2KFvLRd83-6Lk0Dp0MWBZAcFxxydXCM4EvvigfCkxGOMUpoGOIIOdUc9Rk0XKu4dT3R7NfogtanN7W8Z4Us9M_Ztkx1Tqo6rIB5zqXD_D4I66aH1L73xXGCUqEN3MJwR4wFRWdxkJYfYZC0K6DoNvf9R14SKjE2-HQ"/>
+</a>
+<p class="text-[11px] text-gray-600 leading-tight">
+            True hardware-independent Windows imaging. Only one master image needed for easy deployment regardless of manufacturer.
+          </p>
+<a class="text-[10px] text-fb-navy hover:underline block mt-0.5" href="#">See how!</a>
+</div>
+<!-- Ad Item 3: Wedding Card Box -->
+<div class="mb-4 pb-3">
+<a class="font-bold text-fb-navy hover:underline block text-xs mb-1" href="#">Wedding Card Box</a>
+<a class="block mb-1" href="#">
+<img alt="Wedding Card Box" class="w-full h-auto border border-[#cccccc]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCz0QLDhncsrHq6SjnjyvIjkCNLv8YDeFOSMztsbmHHuSj_-APUySOKtx7-K0J_e6U4HRtC1Jwj1a6zOHbM6o6OkMhOUfxBTOEFX1GB5TwKPIiuGHIHzcLjzNOyFN01ec6ZF9JjYWC9zjyD8uCZx-qc6lhOMmIvPlKRxTeVwwZBrwoMyWrRaD5uejy1FlVrZDzON_H8RD0osyJkpZ0S8cU_pmXXNy_wgXMVZdUDOA"/>
+</a>
+<p class="text-[11px] text-gray-600 leading-tight">
+            A beautiful, locking, rotating card box personalized with your photos. Free shipping this week only.
+          </p>
+</div>
+</aside>
+<!-- END: RightSidebarAds -->
+</div>
+</main>
+<!-- END: MainContentContainer -->
+<!-- BEGIN: ClassicFooter -->
+<footer class="w-full max-w-[1020px] mx-auto mt-12 mb-8 pt-2 border-t border-[#cccccc] text-[11px] text-gray-500 px-4" data-purpose="site-footer">
+<div class="flex flex-wrap gap-x-3 gap-y-1 mb-1 text-fb-navy">
+<a class="hover:underline" href="#">About</a>
+<a class="hover:underline" href="#">Advertising</a>
+<a class="hover:underline" href="#">Developers</a>
+<a class="hover:underline" href="#">Careers</a>
+<a class="hover:underline" href="#">Terms</a>
+<a class="hover:underline" href="#">Find Friends</a>
+<a class="hover:underline" href="#">Privacy</a>
+<a class="hover:underline" href="#">Mobile</a>
+<a class="hover:underline" href="#">Help</a>
+</div>
+<p class="text-gray-400 text-[10px]">Facebook © 2009</p>
+</footer>
+<!-- END: ClassicFooter -->
+<!-- BEGIN: InteractiveComposerScript -->
+<script data-purpose="composer-interaction">
+    document.addEventListener('DOMContentLoaded', () => {
+      const statusInput = document.getElementById('wallStatusInput');
+      const shareBtn = document.getElementById('shareBtn');
+      const charCount = document.getElementById('charCount');
+      const feedStream = document.getElementById('wallFeedStream');
+
+      // Update character counter and button state on input
+      statusInput.addEventListener('input', () => {
+        const length = statusInput.value.length;
+        charCount.textContent = `${length}/280`;
+        
+        if (length > 0) {
+          shareBtn.removeAttribute('disabled');
+        } else {
+          shareBtn.setAttribute('disabled', 'true');
+        }
+      });
+
+      // Handle Share action
+      shareBtn.addEventListener('click', () => {
+        const text = statusInput.value.trim();
+        if (!text) return;
+
+        // Create new authentic 2008 Wall Post DOM element
+        const newPost = document.createElement('article');
+        newPost.className = 'border-t border-[#e9e9e9] pt-3 flex space-x-2.5 animate-pulse';
+        newPost.setAttribute('data-purpose', 'feed-item');
+
+        newPost.innerHTML = `
+          <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAApRj_NJ7teK7Rf3hfD4PZF-PaAcqzUl2XHj6wiBEFBq9CDMsnwVNBEh0FydhuKO-XYSEZHJ--QtxLpSs4hL2Kh2Z1r9G5_-kzaSjpGIIFtC18Z3BSjqjGy5vE7VdKFQcIt0NPvXNobYQMwcnF5O_oxbpZ7O0bg8AJBcPbyKPsLdJns02mf5GD-tWBxhY590G8CWjTeRynMuTaaOIcWYgNxLzHbOx6lLCdN0xe6CtN-0--Ck6uwO8" alt="Jon Doe" class="w-10 h-10 object-cover border border-[#cccccc] flex-shrink-0" />
+          <div class="flex-1 text-xs">
+            <div>
+              <a href="#" class="font-bold text-fb-navy hover:underline">Jon Doe</a>
+              <span class="text-gray-900 ml-1">${escapeHtml(text)}</span>
+            </div>
+            <div class="text-[10px] text-gray-400 mt-1">
+              <span>Just now</span> · 
+              <a href="#" class="text-fb-navy hover:underline">Comment</a> · 
+              <a href="#" class="text-fb-navy hover:underline">Like</a>
+            </div>
+          </div>
+        `;
+
+        // Prepend post to feed
+        feedStream.insertBefore(newPost, feedStream.firstChild);
+
+        // Reset input and button
+        statusInput.value = '';
+        charCount.textContent = '0/280';
+        shareBtn.setAttribute('disabled', 'true');
+
+        setTimeout(() => {
+          newPost.classList.remove('animate-pulse');
+        }, 600);
+      });
+
+      // Sanitization helper
+      function escapeHtml(str) {
+        return str
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
+      }
+    });
+  </script>
+<!-- END: InteractiveComposerScript -->
+</body></html>

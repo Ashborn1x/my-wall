@@ -1,0 +1,6 @@
+{
+  "name": "My Wall",
+  "description": "A nostalgic 2008–2009 Facebook-inspired profile wall experience called My Wall.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

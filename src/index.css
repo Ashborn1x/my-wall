@@ -1,0 +1,110 @@
+@import "tailwindcss";
+
+@theme {
+  --color-fb-navy: #3b5998;
+  --color-fb-navy-dark: #29447e;
+  --color-fb-border: #d8dfea;
+  --color-fb-subtle-border: #cccccc;
+  --color-fb-hover-blue: #eceff5;
+  --color-fb-text: #333333;
+  --color-fb-link: #3b5998;
+  --color-fb-gray-bg: #f7f7f7;
+  --color-fb-tooltip-green: #89b657;
+  --color-fb-tooltip-bg: #f2f8eb;
+
+  --font-classic: "Lucida Grande", Tahoma, Verdana, Arial, sans-serif;
+}
+
+@layer base {
+  body {
+    font-family: "Lucida Grande", Tahoma, Verdana, Arial, sans-serif;
+    font-size: 11px;
+    color: #333333;
+    background-color: #ffffff;
+    -webkit-font-smoothing: antialiased;
+    margin: 0;
+  }
+
+  a {
+    color: #3b5998;
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+}
+
+.fb-btn-blue {
+  background-color: #3b5998;
+  border: 1px solid #29447e;
+  border-bottom-color: #1a356e;
+  color: #ffffff;
+  font-weight: bold;
+  text-shadow: 0 -1px 0 #1a356e;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.fb-btn-blue:hover:not(:disabled) {
+  background-color: #4c66a4;
+}
+
+.fb-btn-blue:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.fb-tab {
+  background-color: #d8dfea;
+  border-top: 1px solid #5973a9;
+  border-left: 1px solid #5973a9;
+  border-right: 1px solid #5973a9;
+  color: #3b5998;
+  font-weight: bold;
+  padding: 4px 10px 3px;
+  font-size: 12px;
+  margin-right: 4px;
+  display: inline-block;
+  border-top-left-radius: 2px;
+  border-top-right-radius: 2px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.fb-tab.active {
+  background-color: #ffffff;
+  border-top: 1px solid #3b5998;
+  border-left: 1px solid #3b5998;
+  border-right: 1px solid #3b5998;
+  border-bottom: 1px solid #ffffff;
+  color: #333333;
+  margin-bottom: -1px;
+  position: relative;
+  z-index: 10;
+}
+
+.fb-tab:not(.active):hover {
+  background-color: #eceff5;
+  text-decoration: none;
+}
+
+.fb-box-header {
+  background-color: #eceff5;
+  border-bottom: 1px solid #d8dfea;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: bold;
+  color: #3b5998;
+}
+
+.tooltip-arrow-top {
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 6px solid #89b657;
+  position: absolute;
+  top: -6px;
+  right: 28px;
+}
